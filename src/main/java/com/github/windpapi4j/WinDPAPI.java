@@ -298,7 +298,6 @@ public final class WinDPAPI {
      *   </li>
      * </ul>
      */
-    @SuppressWarnings("unused") // enum values are exposed in the API and are not referenced directly
     public enum CryptProtectFlag {
         /**
          * For remote-access situations where ui is not an option, if UI was specified
@@ -602,7 +601,7 @@ public final class WinDPAPI {
             public int cbData;
             public Pointer pbData;
 
-            protected List getFieldOrder() {
+            protected List<?> getFieldOrder() {
                 return Arrays.asList("cbData", "pbData");
             }
 

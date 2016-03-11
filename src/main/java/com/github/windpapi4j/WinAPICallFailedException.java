@@ -23,6 +23,11 @@ package com.github.windpapi4j;
 public class WinAPICallFailedException extends Exception {
 
     /**
+     * Required for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Constructs a new {@code WinAPICallFailedException} with the specified message and cause.
      *
      * @param message the detail message.

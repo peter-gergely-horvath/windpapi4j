@@ -16,12 +16,17 @@ package com.github.windpapi4j;
 
 
 /**
- * Thrown to indicate that the initialization of WinDPAPI4j
+ * Thrown to indicate that the initialization of WinDPAPI4J
  * library has failed.
  *
  * @author Peter G. Horvath
  */
 public class InitializationFailedException extends Exception {
+
+    /**
+     * Required for serialization.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new {@code InitializationFailedException} with the specified message and cause.

@@ -24,6 +24,11 @@ package com.github.windpapi4j;
 public class HResultException extends RuntimeException {
 
     /**
+     * Required for serialization.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Stores the HRESULT error indicator value.
      */
     private final int hResult;

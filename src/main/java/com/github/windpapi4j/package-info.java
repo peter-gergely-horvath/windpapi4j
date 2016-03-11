@@ -1,5 +1,5 @@
 /**
- * Implementation of WinDPAPI4j library.
+ * Implementation of WinDPAPI4J library.
  *
  * @since 1.0
  * @author Peter G. Horvath
