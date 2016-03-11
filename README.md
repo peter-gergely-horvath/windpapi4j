@@ -54,6 +54,11 @@ Windows DPAPI method.
 ## Sample Code
 
 ```
+package test;
+  
+import com.github.windpapi4j.WinDPAPI;
+import com.github.windpapi4j.WinDPAPI.CryptProtectFlag;
+
 public class Sample {
 
     public static void main(String[] args) throws Exception {
