@@ -1,6 +1,10 @@
 target/
 .idea/
+bin/
+.settings/
 windpapi4j.iml
+.classpath
+.project
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
