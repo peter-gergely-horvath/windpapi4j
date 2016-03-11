@@ -63,7 +63,7 @@
         <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
     </properties>
 
-    <url>TODO</url>
+    <url>https://github.com/peter-gergely-horvath/windpapi4j</url>
     <description>
         WinDPAPI4J is a Java Native Access(JNA)- based wrapper
         for Microsoft Windows Data Protection API (DPAPI)
