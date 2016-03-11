@@ -19,13 +19,13 @@
 
     <scm>
         <connection>
-            TODO
+            https://github.com/peter-gergely-horvath/windpapi4j.git
         </connection>
         <developerConnection>
-            TODO
+            https://github.com/peter-gergely-horvath/windpapi4j.git
         </developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/TODO</url>
+        <url>https://github.com/peter-gergely-horvath/windpapi4j</url>
     </scm>
 
     <developers>
