@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.peter-gergely-horvath</groupId>
+    <artifactId>windpapi4j</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <licenses>
+        <license>
+            <name>LGPL-3.0</name>
+            <url>https://opensource.org/licenses/LGPL-3.0</url>
+            <distribution>repo</distribution>
+            <comments>The GNU Lesser General Public License, version 3.0</comments>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>
+            TODO
+        </connection>
+        <developerConnection>
+            TODO
+        </developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/TODO</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>peter-gergely-horvath</id>
+            <name>Peter G. Horvath</name>
+            <email>peter.gergely.horvath@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Vienna</timezone>
+        </developer>
+    </developers>
+
+    <properties>
+        <!-- Project configuration -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <displayName>Windows DPAPI wrapper for Java</displayName>
+        <javaVersion>7</javaVersion>
+        <maven.compiler.source>1.${javaVersion}</maven.compiler.source>
+        <maven.compiler.target>1.${javaVersion}</maven.compiler.target>
+
+        <!-- Dependency versions -->
+        <jna.version>4.2.1</jna.version>
+        <testng.version>6.9.9</testng.version>
+
+        <!-- Maven plugin versions -->
+        <maven-project-info-reports-plugin.version>2.8.1</maven-project-info-reports-plugin.version>
+        <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+        <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
+        <maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
+        <findbugs-maven-plugin.version>3.0.3</findbugs-maven-plugin.version>
+        <xml-maven-plugin.version>1.0</xml-maven-plugin.version>
+        <maven-source-plugin.version>3.0.0</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+    </properties>
+
+    <url>TODO</url>
+    <description>
+        WinDPAPI4J is a Java Native Access(JNA)- based wrapper
+        for Microsoft Windows Data Protection API (DPAPI)
+        CryptProtectData and CryptUnprotectData methods.
+    </description>
+    <inceptionYear>2016</inceptionYear>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <configLocation>configuration/checkstyle.xml</configLocation>
+                            <encoding>UTF-8</encoding>
+                            <consoleOutput>true</consoleOutput>
+                            <failsOnError>false</failsOnError>
+                            <linkXRef>false</linkXRef>
+                        </configuration>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs-maven-plugin.version}</version>
+                <configuration>
+                    <!--
+                        Enables analysis which takes more memory but finds more bugs.
+                        If you run out of memory, changes the value of the effort element
+                        to 'Low'.
+                    -->
+                    <effort>Max</effort>
+
+                    <!-- Location of FindBugs exclude filter file -->
+                    <excludeFilterFile>configuration/findbugs-exclude.xml</excludeFilterFile>
+
+                    <!-- Build shall fail if problems are found -->
+                    <failOnError>true</failOnError>
+
+                    <!-- Reports all bugs (other values are medium and max) -->
+                    <threshold>Low</threshold>
+
+                    <!-- Produces XML report -->
+                    <xmlOutput>true</xmlOutput>
+
+                    <!-- Configures the directory in which the XML report is created -->
+                    <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
+                </configuration>
+                <executions>
+                    <!--
+                        Ensures that FindBugs inspects source code when project is compiled.
+                    -->
+                    <execution>
+                        <id>analyze-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>${xml-maven-plugin.version}</version>
+                <configuration>
+                    <transformationSets>
+                        <transformationSet>
+                            <!-- Configures the source directory of XML files. -->
+                            <dir>${project.build.directory}/findbugs</dir>
+                            <excludes>
+                                <exclude>findbugs-exclude.xml</exclude>
+                            </excludes>
+
+
+
+                            <!-- Configures the directory in which the FindBugs report is written.-->
+                            <outputDir>${project.build.directory}/findbugs</outputDir>
+
+                            <!-- Selects the used stylesheet. -->
+                            <!-- <stylesheet>fancy-hist.xsl</stylesheet>-->
+                            <!--<stylesheet>default.xsl</stylesheet>-->
+                            <!--<stylesheet>plain.xsl</stylesheet>-->
+                            <stylesheet>fancy.xsl</stylesheet>
+                            <!--<stylesheet>summary.xsl</stylesheet>-->
+                            <fileMappers>
+                                <!-- Configures the file extension of the output files. -->
+                                <fileMapper
+                                        implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                                    <targetExtension>.html</targetExtension>
+                                </fileMapper>
+                            </fileMappers>
+                        </transformationSet>
+                    </transformationSets>
+                </configuration>
+                <executions>
+                    <!-- Ensures that the XSLT transformation is run when the project is compiled. -->
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>findbugs</artifactId>
+                        <version>2.0.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven-project-info-reports-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>${maven-jxr-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs-maven-plugin.version}</version>
+                <configuration>
+                    <!--
+                        Enables analysis which takes more memory but finds more bugs.
+                        If you run out of memory, changes the value of the effort element
+                        to 'low'.
+                    -->
+                    <effort>Max</effort>
+                    <!-- Reports all bugs (other values are medium and max) -->
+                    <threshold>Low</threshold>
+
+                    <!-- Produces XML report -->
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+
+
+
+</project>

@@ -1,0 +1,8 @@
+<FindBugsFilter>
+    <!-- Incorrect identification of dead local store -->
+    <Match>
+        <Class name="com.github.windpapi4j.WinDPAPI" />
+        <Method name="raiseHResultExceptionForLastError" />
+        <Bug pattern="DLS_DEAD_LOCAL_STORE" />
+    </Match>
+</FindBugsFilter>
