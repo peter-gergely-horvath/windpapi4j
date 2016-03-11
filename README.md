@@ -2,8 +2,8 @@
 
 ## Introduction
 
-Starting from Microsoft(R) Windows(R) XP, Windows operating systems provide 
-a built-in cryptographic feature called "Windows Data Protection API" (DPAPI), 
+Starting from Microsoft(R) Windows(R) 2000, Windows operating systems provide 
+a built-in cryptographic feature called ["Windows Data Protection API" (DPAPI)](https://msdn.microsoft.com/en-us/library/ms995355.aspx), 
 which allows any application to securely encrypt confidential user data using 
 the user's credentials in a way that it can only be decrypted by the same user.
 
