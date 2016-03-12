@@ -92,5 +92,5 @@ public class Sample {
 
 ## Availability
 
-At the moment the code is only available here, on GitHub -- If you want to use it, then simply clone the repository 
-and build locally with Maven. Hopefully I will be able to push it to Maven Central soon.
+This library has been made available is [Maven Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.peter-gergely-horvath%22).  
+
