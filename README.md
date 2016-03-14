@@ -92,5 +92,5 @@ public class Sample {
 
 ## Availability
 
-This library has been made available is [Maven Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.peter-gergely-horvath%22).  
+This library has been made available in [Maven Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.peter-gergely-horvath%22).  
 
