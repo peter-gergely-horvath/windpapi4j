@@ -14,11 +14,13 @@ library is used to invoke the native  Windows CryptoAPI
 `CryptProtectData` and `CryptUnprotectData` functions. 
 
 **Note**:
- * Since this library exposes a Windows feature, it will only work, when called from a Java application running on on Windows
+ * Since this library exposes a Windows feature, it will only work, when called from a Java application running on Windows
  * Only an essential subset of Windows Data Protection API (DPAPI) is supported  by this library: advanced cases involving showing prompts to the user etc. 
 are not implemented.
 
+###
 
+The JavaDoc is part of the Maven Central installation and can be viewed online via [javadoc.io](http://javadoc.io/doc/com.github.peter-gergely-horvath/windpapi4j/1.0)
 ## Passing special flags to Windows DPAPI
 
 As described in _Microsoft Development Network Documentation on Cryptography
