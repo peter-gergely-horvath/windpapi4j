@@ -80,7 +80,8 @@ public class Sample {
             String decryptedMessage = new String(decryptedBytes, charsetName);
 
             if(! message.equals(decryptedMessage) ) {
-                throw new IllegalStateException(message + " != " + decryptedMessage); // should not happen
+                // should not happen
+                throw new IllegalStateException(message + " != " + decryptedMessage); 
             }
 
             System.out.println(decryptedMessage);
