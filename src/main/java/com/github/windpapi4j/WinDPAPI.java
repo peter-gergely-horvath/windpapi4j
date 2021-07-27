@@ -26,7 +26,6 @@
  * https://github.com/java-native-access/jna
  *
  */
-
 package com.github.windpapi4j;
 
 import com.sun.jna.Memory;
@@ -36,22 +35,22 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
-
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * <p>
- * Starting from Microsoft(R) Windows(R) XP, Windows operating systems provide
- * a built-in cryptographic feature called "Windows Data Protection API" (DPAPI),
+ * Starting from Microsoft(R) Windows(R) XP, Windows operating systems provide a
+ * built-in cryptographic feature called "Windows Data Protection API" (DPAPI),
  * which allows any application to securely encrypt confidential user data using
- * the user's credentials in a way that it can only be decrypted by the same user.
+ * the user's credentials in a way that it can only be decrypted by the same
+ * user.
  * </p>
  *
  * <p>
  * This Java library exposes Windows Data Protection encryption and decryption
  * features as an easy to use Java API. Behind the scenes, JNA (Java Native
- * Access) library is used to invoke the native  Windows CryptoAPI
+ * Access) library is used to invoke the native Windows CryptoAPI
  * {@code CryptProtectData} and {@code CryptUnprotectData} functions. Only an
  * essential subset of Windows Data Protection API (DPAPI) is supported by this
  * library: advanced cases involving showing prompts to the user etc. are not
@@ -59,54 +58,52 @@ import java.util.List;
  * </p>
  *
  * <p>
- * As described in <i>Microsoft Development Network Documentation on Cryptography
- * Functions </i>, both
+ * As described in <i>Microsoft Development Network Documentation on
+ * Cryptography Functions </i>, both
  * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380882(v=vs.85).aspx">
  * CryptProtectData</a> and
  * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380882(v=vs.85).aspx">
- * CryptUnprotectData</a> functions accept optional flag values, which control their behaviour.
- * These optional flag values are defined in
- * {@link WinDPAPI.CryptProtectFlag} as enum constants
- * and can be passed to the static factory method {@link WinDPAPI#newInstance(CryptProtectFlag...)}}
- * after which the {@code WinDPAPI} instance returned will pass them to the target native
- * Windows DPAPI method.
+ * CryptUnprotectData</a> functions accept optional flag values, which control
+ * their behaviour. These optional flag values are defined in
+ * {@link WinDPAPI.CryptProtectFlag} as enum constants and can be passed to the
+ * static factory method {@link WinDPAPI#newInstance(CryptProtectFlag...)}}
+ * after which the {@code WinDPAPI} instance returned will pass them to the
+ * target native Windows DPAPI method.
  * </p>
  *
  * <p>
- * The methods provided by this class call the corresponding Windows Data Protection API
- * native methods according to the following: </p>
+ * The methods provided by this class call the corresponding Windows Data
+ * Protection API native methods according to the following: </p>
  * <table border="1" summary="Overview of mapping between WindDPAPI and Windows CrpytoAPI methods">
- *     <tr>
- *         <th>
- *             WinDPAPI library methods
- *         </th>
- *         <th>
- *             Windows CryptoAPI method
- *         </th>
- *     </tr>
- *     <tr>
- *         <td>
- *             <ul>
- *                 <li>{@link WinDPAPI#protectData(byte[])}</li>
- *                 <li>{@link WinDPAPI#protectData(byte[], byte[])}</li>
- *                 <li>{@link WinDPAPI#protectData(byte[], byte[], java.lang.String)}</li>
- *             </ul>
- *         </td>
- *         <td>
- *             {@code CryptProtectData}
- *         </td>
- *     </tr>
- *     <tr>
- *         <td>
- *             <ul>
- *                 <li>{@link WinDPAPI#unprotectData(byte[])}</li>
- *                 <li>{@link WinDPAPI#unprotectData(byte[], byte[])}</li>
- *             </ul>
- *         </td>
- *         <td>
- *             {@code CryptUnprotectData}
- *         </td>
- *     </tr>
+ * <tr>
+ * <th>
+ * WinDPAPI library methods
+ * </th>
+ * <th>
+ * Windows CryptoAPI method
+ * </th>
+ * </tr>
+ * <tr>
+ * <td>
+ * <ul>
+ * <li>{@link WinDPAPI#protectData(byte[])}</li>
+ * <li>{@link WinDPAPI#protectData(byte[], byte[])}</li>
+ * <li>{@link WinDPAPI#protectData(byte[], byte[], java.lang.String)}</li>
+ * </ul>
+ * </td>
+ * <td> {@code CryptProtectData}
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <ul>
+ * <li>{@link WinDPAPI#unprotectData(byte[])}</li>
+ * <li>{@link WinDPAPI#unprotectData(byte[], byte[])}</li>
+ * </ul>
+ * </td>
+ * <td> {@code CryptUnprotectData}
+ * </td>
+ * </tr>
  *
  * </table>
  *
@@ -166,20 +163,25 @@ import java.util.List;
  */
 public final class WinDPAPI {
 
-    /** Windows Crypto API JNA wrapper. */
+    /**
+     * Windows Crypto API JNA wrapper.
+     */
     private final Crypt32 cryptoApi = Crypt32.INSTANCE;
-    /** Windows Kernel API JNA wrapper. */
+    /**
+     * Windows Kernel API JNA wrapper.
+     */
     private final Kernel32 kernelApi = Kernel32.INSTANCE;
 
     /**
-     * Retrieved from com.sun.jna.platform.win32.W32Errors, used to
-     * calculate Windows HRESULT from Win32 error return code. */
+     * Retrieved from com.sun.jna.platform.win32.W32Errors, used to calculate
+     * Windows HRESULT from Win32 error return code.
+     */
     private static final short FACILITY_WIN32 = 7;
 
     /**
-     * Indicates if we are being invoked on a Windows operating
-     * system, where DPAPI should be present. (Not considering
-     * ancient 9x, ME and other obsolete platforms)
+     * Indicates if we are being invoked on a Windows operating system, where
+     * DPAPI should be present. (Not considering ancient 9x, ME and other
+     * obsolete platforms)
      */
     private static final boolean IS_WINDOWS_OPERATING_SYSTEM;
 
@@ -189,7 +191,8 @@ public final class WinDPAPI {
     }
 
     /**
-     * The numeric representation of flag values used within this {@code WindDPAPI} instance.
+     * The numeric representation of flag values used within this
+     * {@code WindDPAPI} instance.
      */
     private final int flags;
 
@@ -206,33 +209,35 @@ public final class WinDPAPI {
      * <p>
      * Create a new instance of the {@link WinDPAPI} class.</p>
      * <p>
-     * This static method creates a new {@link WinDPAPI} instance.
-     * If there are {@link CryptProtectFlag}s specified as arguments, the
-     * returned {@code WinDPAPI} instance will pass the flag value
-     * to Windows Data Protection API {@code CryptProtectData}
-     * and {@code CryptUnprotectData} functions for both the encryption
-     * ({@link #protectData(byte[])}), {@link #protectData(byte[], byte[])},
-     * {@link #protectData(byte[], byte[], String)} and decryption
-     * {@link #unprotectData(byte[])},
+     * This static method creates a new {@link WinDPAPI} instance. If there are
+     * {@link CryptProtectFlag}s specified as arguments, the returned
+     * {@code WinDPAPI} instance will pass the flag value to Windows Data
+     * Protection API {@code CryptProtectData} and {@code CryptUnprotectData}
+     * functions for both the encryption      ({@link #protectData(byte[])}), {@link #protectData(byte[], byte[])},
+     * {@link #protectData(byte[], byte[], String)} and decryption      {@link #unprotectData(byte[])},
      * {@link #unprotectData(byte[], byte[])}) methods are called.</p>
      *
      *
      * <p>
      * <b>NOTE:</b>
      * <ul>
-     *     <li>Passing <i>any</i> flag value to this method is <b>optional</b>
-     *          and in most of the cases  unnecessary.</li>
-     *     <li>Some of the available flag values control behaviour or features not exposed in this library.</li>
+     * <li>Passing <i>any</i> flag value to this method is <b>optional</b>
+     * and in most of the cases unnecessary.</li>
+     * <li>Some of the available flag values control behaviour or features not
+     * exposed in this library.</li>
      * </ul>
      *
-     * @param cryptProtectFlags the (optional) flags to apply when Windows Data Protection API methods
-     *                          {@code CryptProtectData} and {@code CryptUnprotectData} are called
+     * @param cryptProtectFlags the (optional) flags to apply when Windows Data
+     * Protection API methods {@code CryptProtectData} and
+     * {@code CryptUnprotectData} are called
      *
-     * @return a {@code WinDPAPI} instance, which (if there is any) applies the passed flags to
-     *      Windows Data Protection API {@code CryptProtectData} and {@code CryptUnprotectData} method calls.
+     * @return a {@code WinDPAPI} instance, which (if there is any) applies the
+     * passed flags to Windows Data Protection API {@code CryptProtectData} and
+     * {@code CryptUnprotectData} method calls.
      *
-     * @throws InitializationFailedException in case the {@code WinDPAPI} could not be initialized.
-     *      (for example if it is called on a non-Windows platform or the loading of the JNA dispatcher fails)
+     * @throws InitializationFailedException in case the {@code WinDPAPI} could
+     * not be initialized. (for example if it is called on a non-Windows
+     * platform or the loading of the JNA dispatcher fails)
      *
      * @see WinDPAPI.CryptProtectFlag
      */
@@ -263,11 +268,13 @@ public final class WinDPAPI {
      * </p>
      *
      * <p>
-     * <b>NOTE:</b> end-of-life Windows platforms are not considered: as a result,
-     * this method practically checks only if the current platform is Windows or not.
+     * <b>NOTE:</b> end-of-life Windows platforms are not considered: as a
+     * result, this method practically checks only if the current platform is
+     * Windows or not.
      * </p>
      *
-     * @return {@code true} if the system is supported and this class can be used, {@code false} otherwise
+     * @return {@code true} if the system is supported and this class can be
+     * used, {@code false} otherwise
      */
     public static boolean isPlatformSupported() {
         return IS_WINDOWS_OPERATING_SYSTEM;
@@ -281,38 +288,38 @@ public final class WinDPAPI {
      *
      * <p>
      * <b>NOTE:</b> Some of the available flag values control behaviour or
-     * features not exposed in this library.
-     * Check <i>Microsoft Developer Network</i> documentation for further reference:
+     * features not exposed in this library. Check <i>Microsoft Developer
+     * Network</i> documentation for further reference:
      * <ul>
-     *   <li>
-     *      <a href="http://msdn.microsoft.com/en-us/library/ms995355.aspx">
-     *          Windows Data Protection</a>
-     *   </li>
-     *   <li>
-     *      <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380261(v=vs.85).aspx">
-     *          CryptProtectData function</a>
-     *   </li>
-     *   <li>
-     *      <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380882(v=vs.85).aspx">
-     *          CryptUnprotectData function</a>
-     *   </li>
+     * <li>
+     * <a href="http://msdn.microsoft.com/en-us/library/ms995355.aspx">
+     * Windows Data Protection</a>
+     * </li>
+     * <li>
+     * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380261(v=vs.85).aspx">
+     * CryptProtectData function</a>
+     * </li>
+     * <li>
+     * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380882(v=vs.85).aspx">
+     * CryptUnprotectData function</a>
+     * </li>
      * </ul>
      */
     public enum CryptProtectFlag {
         /**
-         * For remote-access situations where ui is not an option, if UI was specified
-         * on protect or unprotect operation, the call will fail and GetLastError() will
-         * indicate ERROR_PASSWORD_RESTRICTION.
+         * For remote-access situations where ui is not an option, if UI was
+         * specified on protect or unprotect operation, the call will fail and
+         * GetLastError() will indicate ERROR_PASSWORD_RESTRICTION.
          */
         CRYPTPROTECT_UI_FORBIDDEN(0x1),
         /**
-         * Per machine protected data -- any user on machine where CryptProtectData
-         * took place may CryptUnprotectData.
+         * Per machine protected data -- any user on machine where
+         * CryptProtectData took place may CryptUnprotectData.
          */
         CRYPTPROTECT_LOCAL_MACHINE(0x4),
         /**
-         * Force credential synchronize during CryptProtectData()
-         * Synchronize is only operation that occurs during this operation.
+         * Force credential synchronize during CryptProtectData() Synchronize is
+         * only operation that occurs during this operation.
          */
         CRYPTPROTECT_CRED_SYNC(0x8),
         /**
@@ -332,36 +339,40 @@ public final class WinDPAPI {
          */
         CRYPTPROTECT_CRED_REGENERATE(0x80);
 
-
-        /** The numeric representation of this flag. */
+        /**
+         * The numeric representation of this flag.
+         */
         private final int value;
 
         /**
          * Constructs a enum constant with the value associated to it.
          *
          * @param flagValue the numeric representation of this enum constant
-         * */
+         *
+         */
         CryptProtectFlag(int flagValue) {
             this.value = flagValue;
         }
     }
 
-
     /**
      * <p>
-     * Encrypts the provided data using <i>Windows Data Protection API</i> {@code CryptProtectData} method.
+     * Encrypts the provided data using <i>Windows Data Protection API</i>
+     * {@code CryptProtectData} method.
      * </p>
      *
      * <p>
-     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)}, then they are passed to
-     * the underlying {@code CryptProtectData} method call.
+     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)},
+     * then they are passed to the underlying {@code CryptProtectData} method
+     * call.
      * </p>
      *
      * @param data the data to encrypt (cannot be {@code null})
      * @return the encrypted data
      *
      * @throws NullPointerException if argument {@code data} is {@code null}
-     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
+     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI
+     * {@code CryptProtectData} fails
      *
      * @see WinDPAPI#unprotectData(byte[])
      */
@@ -369,25 +380,28 @@ public final class WinDPAPI {
         return protectData(data, null);
     }
 
-
     /**
      * <p>
-     * Encrypts the provided data using <i>Windows Data Protection API</i> {@code CryptProtectData} method.
-     * The (optional) entropy parameter allows an additional secret to be specified, which will be required
-     * to decrypt the data.
+     * Encrypts the provided data using <i>Windows Data Protection API</i>
+     * {@code CryptProtectData} method. The (optional) entropy parameter allows
+     * an additional secret to be specified, which will be required to decrypt
+     * the data.
      * </p>
      *
      * <p>
-     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)}, then they are passed to
-     * the underlying {@code CryptProtectData} method call.
+     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)},
+     * then they are passed to the underlying {@code CryptProtectData} method
+     * call.
      * </p>
      *
      * @param data the data to encrypt (cannot be {@code null})
-     * @param entropy password or other additional entropy used to encrypt the data (might be {@code null})
+     * @param entropy password or other additional entropy used to encrypt the
+     * data (might be {@code null})
      *
      * @return the encrypted data
      *
-     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
+     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI
+     * {@code CryptProtectData} fails
      * @throws NullPointerException if argument {@code data} is {@code null}
      *
      * @see WinDPAPI#unprotectData(byte[], byte[])
@@ -398,24 +412,28 @@ public final class WinDPAPI {
 
     /**
      * <p>
-     * Encrypts the provided data using <i>Windows Data Protection API</i> {@code CryptProtectData} method.
-     * The (optional) entropy parameter allows an additional secret to be specified, which will be required
-     * to decrypt the data.
+     * Encrypts the provided data using <i>Windows Data Protection API</i>
+     * {@code CryptProtectData} method. The (optional) entropy parameter allows
+     * an additional secret to be specified, which will be required to decrypt
+     * the data.
      * </p>
      *
      * <p>
-     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)}, then they are passed to
-     * the underlying {@code CryptProtectData} method call.
+     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)},
+     * then they are passed to the underlying {@code CryptProtectData} method
+     * call.
      * </p>
      *
      * @param data the data to encrypt (cannot be {@code null})
-     * @param entropy password or other additional entropy used to encrypt the data (might be {@code null})
+     * @param entropy password or other additional entropy used to encrypt the
+     * data (might be {@code null})
      * @param description a human readable description of data to be encrypted,
-     *                    which will be included with the encrypted data (might be {@code null})
+     * which will be included with the encrypted data (might be {@code null})
      *
      * @return the encrypted data
      *
-     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
+     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI
+     * {@code CryptProtectData} fails
      * @throws NullPointerException if argument {@code data} is {@code null}
      *
      * @see WinDPAPI#unprotectData(byte[], byte[])
@@ -452,20 +470,23 @@ public final class WinDPAPI {
 
     /**
      * <p>
-     * Decrypts the provided encrypted data and performs an integrity check using
+     * Decrypts the provided encrypted data and performs an integrity check
+     * using
      * <i>Windows Data Protection API</i> {@code CryptUnprotectData} method.
      * </p>
      *
      * <p>
-     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)}, then they are passed to
-     * the underlying {@code CryptUnprotectData} method call.
+     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)},
+     * then they are passed to the underlying {@code CryptUnprotectData} method
+     * call.
      * </p>
      *
      * @param data the data to decrypt (cannot be {@code null})
      *
      * @return the decrypted data
      *
-     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
+     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI
+     * {@code CryptUnprotectData} fails
      * @throws NullPointerException if argument {@code data} is {@code null}
      *
      * @see WinDPAPI#protectData(byte[])
@@ -476,23 +497,27 @@ public final class WinDPAPI {
 
     /**
      * <p>
-     * Decrypts the provided encrypted data and performs an integrity check using
-     * <i>Windows Data Protection API</i> {@code CryptUnprotectData} method.
-     * The (optional) entropy parameter is required if the data was encrypted
-     * using an additional secret.
+     * Decrypts the provided encrypted data and performs an integrity check
+     * using
+     * <i>Windows Data Protection API</i> {@code CryptUnprotectData} method. The
+     * (optional) entropy parameter is required if the data was encrypted using
+     * an additional secret.
      * </p>
      *
      * <p>
-     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)}, then they are passed to
-     * the underlying {@code CryptUnprotectData} method call.
+     * If any flags were specified in {@link #newInstance(CryptProtectFlag...)},
+     * then they are passed to the underlying {@code CryptUnprotectData} method
+     * call.
      * </p>
      *
      * @param data the data to decrypt (cannot be {@code null})
-     * @param entropy password or other additional entropy that was used to encrypt the data (might be {@code null})
+     * @param entropy password or other additional entropy that was used to
+     * encrypt the data (might be {@code null})
      *
      * @return the decrypted data
      *
-     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
+     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI
+     * {@code CryptUnprotectData} fails
      * @throws NullPointerException if argument {@code data} is {@code null}
      *
      * @see WinDPAPI#protectData(byte[], byte[])
@@ -532,7 +557,6 @@ public final class WinDPAPI {
 
     }
 
-
     //CHECKSTYLE.OFF: JavadocMethod -- internal methods
     private void checkNotNull(Object object, String message) {
         if (object == null) {
@@ -550,19 +574,14 @@ public final class WinDPAPI {
                 : ((winApiErrorCode) & 0x0000FFFF) | ((int) FACILITY_WIN32 << 16) | 0x80000000);
         //CHECKSTYLE.ON: MagicNumber|InnerAssignment
 
-
         throw new HResultException(String.format("%s call signalled an error.", methodName), hResult);
     }
     //CHECKSTYLE.ON: JavadocMethod -- internal methods
-
-
-
 
     //CHECKSTYLE.OFF: TypeName|MethodName|VisibilityModifier|JavadocType|JavadocMethod|JavadocVariable -- JNA wrapper
     interface Kernel32 extends StdCallLibrary {
 
         Kernel32 INSTANCE = loadNativeLibraryJNAFacade("Kernel32", Kernel32.class);
-
 
         Pointer LocalFree(Pointer hLocal);
 
@@ -573,20 +592,20 @@ public final class WinDPAPI {
 
         Crypt32 INSTANCE = loadNativeLibraryJNAFacade("Crypt32", Crypt32.class);
 
-
         boolean CryptProtectData(DATA_BLOB pDataIn, String szDataDescr,
-                                 DATA_BLOB pOptionalEntropy, Pointer pvReserved,
-                                 Pointer pPromptStruct,
-                                 int dwFlags,
-                                 DATA_BLOB pDataOut);
+                DATA_BLOB pOptionalEntropy, Pointer pvReserved,
+                Pointer pPromptStruct,
+                int dwFlags,
+                DATA_BLOB pDataOut);
 
         boolean CryptUnprotectData(DATA_BLOB pDataIn, PointerByReference szDataDescr,
-                                   DATA_BLOB pOptionalEntropy, Pointer pvReserved,
-                                   Pointer pPromptStruct,
-                                   int dwFlags,
-                                   DATA_BLOB pDataOut);
+                DATA_BLOB pOptionalEntropy, Pointer pvReserved,
+                Pointer pPromptStruct,
+                int dwFlags,
+                DATA_BLOB pDataOut);
 
         class DATA_BLOB extends Structure {
+
             DATA_BLOB() {
                 super();
             }
@@ -601,7 +620,8 @@ public final class WinDPAPI {
             public int cbData;
             public Pointer pbData;
 
-            protected List<?> getFieldOrder() {
+            @Override
+            protected List<String> getFieldOrder() {
                 return Arrays.asList("cbData", "pbData");
             }
 
