@@ -20,13 +20,13 @@
 
     <scm>
         <connection>
-            https://github.com/peter-gergely-horvath/windpapi4j.git
+            scm:git:https://github.com/peter-gergely-horvath/windpapi4j.git
         </connection>
         <developerConnection>
-            https://github.com/peter-gergely-horvath/windpapi4j.git
+            scm:git:https://github.com/peter-gergely-horvath/windpapi4j.git
         </developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/peter-gergely-horvath/windpapi4j</url>
+        <url>scm:git:https://github.com/peter-gergely-horvath/windpapi4j</url>
     </scm>
 
     <developers>
@@ -185,58 +185,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>xml-maven-plugin</artifactId>
-                <version>${xml-maven-plugin.version}</version>
-                <configuration>
-                    <transformationSets>
-                        <transformationSet>
-                            <!-- Configures the source directory of XML files. -->
-                            <dir>${project.build.directory}/spotbugs</dir>
-                            <excludes>
-                                <exclude>findbugs-exclude.xml</exclude>
-                            </excludes>
-
-
-
-                            <!-- Configures the directory in which the spotbugs report is written.-->
-                            <outputDir>${project.build.directory}/spotbugs</outputDir>
-
-                            <!-- Selects the used stylesheet. -->
-                            <!-- <stylesheet>fancy-hist.xsl</stylesheet>-->
-                            <!--<stylesheet>default.xsl</stylesheet>-->
-                            <!--<stylesheet>plain.xsl</stylesheet>-->
-                            <stylesheet>fancy.xsl</stylesheet>
-                            <!--<stylesheet>summary.xsl</stylesheet>-->
-                            <fileMappers>
-                                <!-- Configures the file extension of the output files. -->
-                                <fileMapper
-                                        implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-                                    <targetExtension>.html</targetExtension>
-                                </fileMapper>
-                            </fileMappers>
-                        </transformationSet>
-                    </transformationSets>
-                </configuration>
-                <executions>
-                    <!-- Ensures that the XSLT transformation is run when the project is compiled. -->
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>transform</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.github.spotbugs</groupId>
-                        <artifactId>spotbugs</artifactId>
-                        <version>${spotbugs.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
