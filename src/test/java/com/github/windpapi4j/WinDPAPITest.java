@@ -14,10 +14,6 @@
 
 package com.github.windpapi4j;
 
-import com.github.windpapi4j.HResultException;
-import com.github.windpapi4j.InitializationFailedException;
-import com.github.windpapi4j.WinAPICallFailedException;
-import com.github.windpapi4j.WinDPAPI;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;

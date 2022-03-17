@@ -75,7 +75,8 @@ import java.util.List;
  * <p>
  * The methods provided by this class call the corresponding Windows Data Protection API
  * native methods according to the following: </p>
- * <table border="1" summary="Overview of mapping between WindDPAPI and Windows CrpytoAPI methods">
+ * <table border="1">
+ *     <caption>Overview of mapping between WindDPAPI and Windows CrpytoAPI methods</caption>
  *     <tr>
  *         <th>
  *             WinDPAPI library methods
@@ -113,11 +114,11 @@ import java.util.List;
  *
  *
  *
- * <h3>Sample Code</h3>
+ * <h2>Sample Code</h2>
  *
  *
  * <pre><code>
- * package test;
+ * package sample;
  *
  * import com.github.windpapi4j.WinDPAPI;
  * import com.github.windpapi4j.WinDPAPI.CryptProtectFlag;
@@ -601,7 +602,7 @@ public final class WinDPAPI {
             public int cbData;
             public Pointer pbData;
 
-            protected List<?> getFieldOrder() {
+            protected List<String> getFieldOrder() {
                 return Arrays.asList("cbData", "pbData");
             }
 
