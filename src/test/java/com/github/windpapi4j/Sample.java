@@ -3,6 +3,8 @@ package com.github.windpapi4j;
 import com.github.windpapi4j.WinDPAPI;
 import com.github.windpapi4j.WinDPAPI.CryptProtectFlag;
 
+import java.nio.charset.StandardCharsets;
+
 public class Sample {
 
     public static void main(String[] args) throws Exception {
@@ -11,15 +13,14 @@ public class Sample {
             WinDPAPI winDPAPI = WinDPAPI.newInstance(CryptProtectFlag.CRYPTPROTECT_UI_FORBIDDEN);
 
             String message = "Hello World!";
-            String charsetName = "UTF-8";
 
-            byte[] clearTextBytes = message.getBytes(charsetName);
+            byte[] clearTextBytes = message.getBytes(StandardCharsets.UTF_8);
 
             byte[] cipherTextBytes = winDPAPI.protectData(clearTextBytes);
 
             byte[] decryptedBytes = winDPAPI.unprotectData(cipherTextBytes);
 
-            String decryptedMessage = new String(decryptedBytes, charsetName);
+            String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
 
             if(! message.equals(decryptedMessage) ) {
                 throw new IllegalStateException(message + " != " + decryptedMessage); // should not happen
