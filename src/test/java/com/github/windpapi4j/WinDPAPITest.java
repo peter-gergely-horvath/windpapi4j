@@ -18,7 +18,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class WinDPAPITest {
 
@@ -181,18 +181,10 @@ public class WinDPAPITest {
 
 
     private static byte[] convertStringToByteArray(String string) {
-        try {
-            return string.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("The JVM should always support UTF-8", e); // should not happen
-        }
+        return string.getBytes(StandardCharsets.UTF_8);
     }
 
     private String convertByteArrayToString(byte[] byteArray) {
-        try {
-            return new String(byteArray, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("The JVM should always support UTF-8", e); // should not happen
-        }
+        return new String(byteArray, StandardCharsets.UTF_8);
     }
 }
