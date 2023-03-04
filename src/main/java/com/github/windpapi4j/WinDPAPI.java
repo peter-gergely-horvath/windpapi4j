@@ -42,7 +42,7 @@ import java.util.List;
 
 /**
  * <p>
- * Starting from Microsoft(R) Windows(R) XP, Windows operating systems provide
+ * Starting from Microsoft(R) Windows(R) 2000, Windows operating systems provide
  * a built-in cryptographic feature called "Windows Data Protection API" (DPAPI),
  * which allows any application to securely encrypt confidential user data using
  * the user's credentials in a way that it can only be decrypted by the same user.
@@ -61,9 +61,9 @@ import java.util.List;
  * <p>
  * As described in <i>Microsoft Development Network Documentation on Cryptography
  * Functions </i>, both
- * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380882(v=vs.85).aspx">
+ * <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata">
  * CryptProtectData</a> and
- * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380882(v=vs.85).aspx">
+ * <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata">
  * CryptUnprotectData</a> functions accept optional flag values, which control their behaviour.
  * These optional flag values are defined in
  * {@link WinDPAPI.CryptProtectFlag} as enum constants
@@ -291,11 +291,11 @@ public final class WinDPAPI {
      *          Windows Data Protection</a>
      *   </li>
      *   <li>
-     *      <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380261(v=vs.85).aspx">
+     *      <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata">
      *          CryptProtectData function</a>
      *   </li>
      *   <li>
-     *      <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa380882(v=vs.85).aspx">
+     *      <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata">
      *          CryptUnprotectData function</a>
      *   </li>
      * </ul>
