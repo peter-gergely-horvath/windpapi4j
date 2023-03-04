@@ -49,7 +49,7 @@
         <maven.compiler.target>1.${javaVersion}</maven.compiler.target>
 
         <!-- Dependency versions -->
-        <jna.version>5.10.0</jna.version>
+        <jna.version>5.13.0</jna.version>
         <testng.version>7.5</testng.version>
 
         <!-- Maven plugin versions -->
