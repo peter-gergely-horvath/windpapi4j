@@ -614,7 +614,7 @@ public final class WinDPAPI {
     }
 
     //CHECKSTYLE.OFF: JavadocMethod -- internal method
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("deprecated")
     private static <T> T loadNativeLibraryJNAFacade(String name, Class<T> clazz) {
         return (T) Native.loadLibrary(name, clazz, W32APIOptions.UNICODE_OPTIONS);
     }
