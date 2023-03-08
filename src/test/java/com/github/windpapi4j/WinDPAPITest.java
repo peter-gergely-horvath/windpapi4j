@@ -83,13 +83,8 @@ public class WinDPAPITest {
         {
             winDPAPI.unprotectData(protectedData);
             Assert.fail("Expected to throw exception");
-        } catch ( WinAPICallFailedException e) {
-            Throwable cause = e.getCause();
-
-            Assert.assertTrue(cause instanceof HResultException,
-                    "Cause should have been HResultException, but was " + cause);
-
-            int hResult = ((HResultException) cause).getHResult();
+        } catch ( Win32Exception e) {
+            int hResult = e.getHR().intValue();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
@@ -135,13 +130,8 @@ public class WinDPAPITest {
         {
             winDPAPI.unprotectData(protectedData);
             Assert.fail("Expected to throw exception");
-        } catch ( WinAPICallFailedException e) {
-            Throwable cause = e.getCause();
-
-            Assert.assertTrue(cause instanceof HResultException,
-                    "Cause should have been HResultException, but was " + cause);
-
-            int hResult = ((HResultException) cause).getHResult();
+        } catch ( Win32Exception e) {
+            int hResult = e.getHR().intValue();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
@@ -165,13 +155,8 @@ public class WinDPAPITest {
             entropy[2] = (byte)(~(int) entropy[2]); // simulate data corruption
             winDPAPI.unprotectData(protectedData, entropy);
             Assert.fail("Expected to throw exception");
-        } catch ( WinAPICallFailedException e) {
-            Throwable cause = e.getCause();
-
-            Assert.assertTrue(cause instanceof HResultException,
-                    "Cause should have been HResultException, but was " + cause);
-
-            int hResult = ((HResultException) cause).getHResult();
+        } catch ( Win32Exception e) {
+            int hResult = e.getHR().intValue();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }

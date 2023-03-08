@@ -29,16 +29,10 @@
 
 package com.github.windpapi4j;
 
-import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import com.sun.jna.ptr.PointerByReference;
-import com.sun.jna.win32.StdCallLibrary;
-import com.sun.jna.win32.W32APIOptions;
+import com.sun.jna.platform.win32.Kernel32Util;
+import com.sun.jna.platform.win32.WinCrypt;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * <p>
@@ -426,30 +420,48 @@ public final class WinDPAPI {
 
         checkNotNull(data, "Argument data cannot be null");
 
+        WinCrypt.DATA_BLOB pDataIn = new WinCrypt.DATA_BLOB(data);
+        WinCrypt.DATA_BLOB pDataProtected = new WinCrypt.DATA_BLOB();
+        WinCrypt.DATA_BLOB pEntropy = (entropy == null) ? null : new WinCrypt.DATA_BLOB(entropy);
+        Win32Exception err = null;
+        byte[] protectedData = null;
         try {
-            Crypt32.DATA_BLOB pDataIn = new Crypt32.DATA_BLOB(data);
-            Crypt32.DATA_BLOB pDataProtected = new Crypt32.DATA_BLOB();
-            //CHECKSTYLE.OFF: AvoidInlineConditionals
-            Crypt32.DATA_BLOB pEntropy = (entropy == null) ? null : new Crypt32.DATA_BLOB(entropy);
-            //CHECKSTYLE.ON: AvoidInlineConditionals
-
-            try {
-                final boolean apiCallSuccessful = cryptoApi.CryptProtectData(pDataIn, description,
-                        pEntropy, null, null, flags, pDataProtected);
-
-                if (!apiCallSuccessful) {
-                    raiseHResultExceptionForLastError("CryptProtectData");
-                }
-
-                return pDataProtected.getData();
-            } finally {
-                if (pDataProtected.pbData != null) {
-                    kernelApi.LocalFree(pDataProtected.pbData);
+            final boolean apiCallSuccessful = Crypt32.INSTANCE.CryptProtectData(
+                    pDataIn, description, pEntropy, null, null, flags, pDataProtected);
+            if (!apiCallSuccessful) {
+                err = new Win32Exception(Kernel32.INSTANCE.GetLastError());
+            } else {
+                protectedData = pDataProtected.getData();
+            }
+        } finally {
+            if (pDataIn.pbData != null) {
+                pDataIn.pbData.clear(pDataIn.cbData);
+            }
+            if (pEntropy != null && pEntropy.pbData != null) {
+                pEntropy.pbData.clear(pEntropy.cbData);
+            }
+            if (pDataProtected.pbData != null) {
+                pDataProtected.pbData.clear(pDataProtected.cbData);
+                try {
+                    Kernel32Util.freeLocalMemory(pDataProtected.pbData);
+                } catch(Win32Exception e) {
+                    if (err == null) {
+                        err = e;
+                    } else {
+                        err.addSuppressed(e);
+                    }
                 }
             }
-        } catch (Throwable t) {
-            throw new WinAPICallFailedException("Invocation of CryptProtectData failed", t);
         }
+
+        if (err != null) {
+            if (protectedData != null) {
+                Arrays.fill(protectedData, (byte) 0);
+            }
+            throw err;
+        }
+
+        return protectedData;
     }
 
     /**
@@ -500,38 +512,51 @@ public final class WinDPAPI {
      * @see WinDPAPI#protectData(byte[], byte[])
      */
     public byte[] unprotectData(byte[] data, byte[] entropy) throws WinAPICallFailedException {
-
         checkNotNull(data, "Argument data cannot be null");
 
+        WinCrypt.DATA_BLOB pDataIn = new WinCrypt.DATA_BLOB(data);
+        WinCrypt.DATA_BLOB pDataUnprotected = new WinCrypt.DATA_BLOB();
+        WinCrypt.DATA_BLOB pEntropy = (entropy == null) ? null : new WinCrypt.DATA_BLOB(entropy);
+        Win32Exception err = null;
+        byte[] unProtectedData = null;
         try {
-            Crypt32.DATA_BLOB pDataIn = new Crypt32.DATA_BLOB(data);
-            Crypt32.DATA_BLOB pDataUnprotected = new Crypt32.DATA_BLOB();
-            //CHECKSTYLE.OFF: AvoidInlineConditionals
-            Crypt32.DATA_BLOB pEntropy = (entropy == null) ? null : new Crypt32.DATA_BLOB(entropy);
-            //CHECKSTYLE.ON
-
-            PointerByReference pDescription = new PointerByReference();
-
-            try {
-                boolean apiCallSuccessful = cryptoApi.CryptUnprotectData(pDataIn, pDescription,
-                        pEntropy, null, null, flags, pDataUnprotected);
-
-                if (!apiCallSuccessful) {
-                    raiseHResultExceptionForLastError("CryptUnprotectData");
-                }
-                return pDataUnprotected.getData();
-            } finally {
-                if (pDataUnprotected.pbData != null) {
-                    kernelApi.LocalFree(pDataUnprotected.pbData);
-                }
-                if (pDescription.getValue() != null) {
-                    kernelApi.LocalFree(pDescription.getValue());
+            final boolean apiCallSuccessful = Crypt32.INSTANCE.CryptUnprotectData(
+                    pDataIn, null, pEntropy, null, null, flags, pDataUnprotected);
+            if (!apiCallSuccessful) {
+                int code = Kernel32.INSTANCE.GetLastError();
+                err = new Win32Exception(code);
+            } else {
+                unProtectedData = pDataUnprotected.getData();
+            }
+        } finally {
+            if (pDataIn.pbData != null) {
+                pDataIn.pbData.clear(pDataIn.cbData);
+            }
+            if (pEntropy != null && pEntropy.pbData != null) {
+                pEntropy.pbData.clear(pEntropy.cbData);
+            }
+            if (pDataUnprotected.pbData != null) {
+                pDataUnprotected.pbData.clear(pDataUnprotected.cbData);
+                try {
+                    Kernel32Util.freeLocalMemory(pDataUnprotected.pbData);
+                } catch(Win32Exception e) {
+                    if (err == null) {
+                        err = e;
+                    } else {
+                        err.addSuppressed(e);
+                    }
                 }
             }
-        } catch (Throwable t) {
-            throw new WinAPICallFailedException("Invocation of CryptUnprotectData failed", t);
         }
 
+        if (err != null) {
+            if (unProtectedData != null) {
+                Arrays.fill(unProtectedData, (byte) 0);
+            }
+            throw err;
+        }
+
+        return unProtectedData;
     }
 
 
@@ -544,7 +569,7 @@ public final class WinDPAPI {
 
     private void raiseHResultExceptionForLastError(String methodName) {
 
-        final int winApiErrorCode = kernelApi.GetLastError();
+        final int winApiErrorCode = Kernel32.INSTANCE.GetLastError();
         // based on com.sun.jna.platform.win32.W32Errors.HRESULT_FROM_WIN32(int) with minor changes
 
         //CHECKSTYLE.OFF: MagicNumber|InnerAssignment -- based on existing implementation
@@ -558,65 +583,4 @@ public final class WinDPAPI {
     //CHECKSTYLE.ON: JavadocMethod -- internal methods
 
 
-
-
-    //CHECKSTYLE.OFF: TypeName|MethodName|VisibilityModifier|JavadocType|JavadocMethod|JavadocVariable -- JNA wrapper
-    interface Kernel32 extends StdCallLibrary {
-
-        Kernel32 INSTANCE = loadNativeLibraryJNAFacade("Kernel32", Kernel32.class);
-
-
-        Pointer LocalFree(Pointer hLocal);
-
-        int GetLastError();
-    }
-
-    interface Crypt32 extends StdCallLibrary {
-
-        Crypt32 INSTANCE = loadNativeLibraryJNAFacade("Crypt32", Crypt32.class);
-
-
-        boolean CryptProtectData(DATA_BLOB pDataIn, String szDataDescr,
-                                 DATA_BLOB pOptionalEntropy, Pointer pvReserved,
-                                 Pointer pPromptStruct,
-                                 int dwFlags,
-                                 DATA_BLOB pDataOut);
-
-        boolean CryptUnprotectData(DATA_BLOB pDataIn, PointerByReference szDataDescr,
-                                   DATA_BLOB pOptionalEntropy, Pointer pvReserved,
-                                   Pointer pPromptStruct,
-                                   int dwFlags,
-                                   DATA_BLOB pDataOut);
-
-        class DATA_BLOB extends Structure {
-            DATA_BLOB() {
-                super();
-            }
-
-            DATA_BLOB(byte[] data) {
-                pbData = new Memory(data.length);
-                pbData.write(0, data, 0, data.length);
-                cbData = data.length;
-                allocateMemory();
-            }
-
-            public int cbData;
-            public Pointer pbData;
-
-            protected List<String> getFieldOrder() {
-                return Arrays.asList("cbData", "pbData");
-            }
-
-            public byte[] getData() {
-                return pbData == null ? null : pbData.getByteArray(0, cbData);
-            }
-        }
-    }
-
-    //CHECKSTYLE.OFF: JavadocMethod -- internal method
-    @SuppressWarnings("deprecated")
-    private static <T> T loadNativeLibraryJNAFacade(String name, Class<T> clazz) {
-        return (T) Native.loadLibrary(name, clazz, W32APIOptions.UNICODE_OPTIONS);
-    }
-    //CHECKSTYLE.ON: JavadocMethod
 }
