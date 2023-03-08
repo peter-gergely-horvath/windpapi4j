@@ -56,7 +56,7 @@ Windows DPAPI method.
 ## Sample Code
 
 ```
-package test;
+package sample;
   
 import com.github.windpapi4j.WinDPAPI;
 import com.github.windpapi4j.WinDPAPI.CryptProtectFlag;
