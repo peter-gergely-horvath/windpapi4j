@@ -1,0 +1,28 @@
+NOTICE
+
+This project contains code derived from the JNA Platform library project,
+which is dual-licensed under LGPL 2.1 or later and the Apache License 2.0.
+
+The original source code is available at:
+https://github.com/java-native-access/jna
+
+Certain files in this project incorporate portions of the JNA Platform library.
+Each such file explicitly documents:
+- The original source and author(s).
+- The specific modifications made.
+
+The original implementations from the JNA Platform library are respectfully attributed
+to their original authors.
+
+Copyright Notice from JNA Platform
+
+Copyright (c) 2007, 2013 Timothy Wall, Markus Karg, All Rights Reserved
+Copyright (c) 2010 Daniel Doubrovkine, All Rights Reserved
+
+Copyright Notice for Modifications
+
+All modifications and original contributions in this project are:
+Copyright (c) 2016-2023 Peter G. Horvath, All Rights Reserved
+
+This project is distributed under the terms of the LGPL or
+(at your option) any later version. See the LICENSE file for details.

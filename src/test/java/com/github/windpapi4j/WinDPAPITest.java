@@ -49,8 +49,6 @@ public class WinDPAPITest {
     }
 
 
-
-
     @Test
     public void testSimpleEncryption() throws WinAPICallFailedException {
 
@@ -77,19 +75,13 @@ public class WinDPAPITest {
         byte[] input = convertStringToByteArray(originalString);
 
         byte[] protectedData = winDPAPI.protectData(input);
-        protectedData[2] = (byte)(~(int) protectedData[2]); // simulate data corruption
+        protectedData[2] = (byte) (~(int) protectedData[2]); // simulate data corruption
 
-        try
-        {
+        try {
             winDPAPI.unprotectData(protectedData);
             Assert.fail("Expected to throw exception");
-        } catch ( WinAPICallFailedException e) {
-            Throwable cause = e.getCause();
-
-            Assert.assertTrue(cause instanceof HResultException,
-                    "Cause should have been HResultException, but was " + cause);
-
-            int hResult = ((HResultException) cause).getHResult();
+        } catch (HResultException ex) {
+            int hResult = ex.getHResult();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
@@ -131,17 +123,11 @@ public class WinDPAPITest {
 
         byte[] protectedData = winDPAPI.protectData(input, entropy);
 
-        try
-        {
+        try {
             winDPAPI.unprotectData(protectedData);
             Assert.fail("Expected to throw exception");
-        } catch ( WinAPICallFailedException e) {
-            Throwable cause = e.getCause();
-
-            Assert.assertTrue(cause instanceof HResultException,
-                    "Cause should have been HResultException, but was " + cause);
-
-            int hResult = ((HResultException) cause).getHResult();
+        } catch (HResultException ex) {
+            int hResult = ex.getHResult();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
@@ -160,24 +146,16 @@ public class WinDPAPITest {
 
         byte[] protectedData = winDPAPI.protectData(input, entropy);
 
-        try
-        {
-            entropy[2] = (byte)(~(int) entropy[2]); // simulate data corruption
+        try {
+            entropy[2] = (byte) (~(int) entropy[2]); // simulate data corruption
             winDPAPI.unprotectData(protectedData, entropy);
             Assert.fail("Expected to throw exception");
-        } catch ( WinAPICallFailedException e) {
-            Throwable cause = e.getCause();
-
-            Assert.assertTrue(cause instanceof HResultException,
-                    "Cause should have been HResultException, but was " + cause);
-
-            int hResult = ((HResultException) cause).getHResult();
+        } catch (HResultException ex) {
+            int hResult = ex.getHResult();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
     }
-
-
 
 
     private static byte[] convertStringToByteArray(String string) {
