@@ -36,4 +36,13 @@ public class WinAPICallFailedException extends Exception {
     WinAPICallFailedException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    /**
+     * Constructs a new {@code WinAPICallFailedException} with the specified message.
+     *
+     * @param message the detail message.
+     */
+    WinAPICallFailedException(String message) {
+        super(message);
+    }
 }

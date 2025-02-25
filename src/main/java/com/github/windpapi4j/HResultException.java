@@ -21,7 +21,7 @@ package com.github.windpapi4j;
  *
  * @author Peter G. Horvath
  */
-public class HResultException extends RuntimeException {
+public class HResultException extends WinAPICallFailedException {
 
     /**
      * Retrieved from com.sun.jna.platform.win32.W32Errors, used to
@@ -41,35 +41,21 @@ public class HResultException extends RuntimeException {
     private final int hResult;
 
     /**
-     * Constructs a new {@code HResultException} with the specified message and HResult value.
+     * Constructs a new {@code HResultException} with the specified methodId and HResult value.
      *
-     * @param message the detail message.
+     * @param methodId the identifier of the method that failed.
      * @param hResult the HRESULT value from Windows API.
      */
-    HResultException(String message, int hResult) {
-        super(String.format("%s HRESULT=%s", message, hResult));
+    HResultException(String methodId, int hResult) {
+        super(String.format("%s failed with HRESULT=%s", methodId, hResult));
         this.hResult = hResult;
     }
 
-    /**
-     * Constructs a new {@code HResultException} with the specified HResult value.
-     *
-     * @param hResult the HRESULT value from Windows API.
-     */
-    HResultException(int hResult) {
-        super(String.format("HRESULT=%s", hResult));
-        this.hResult = hResult;
+    static HResultException forLastErrorCode(String methodId, int lastErrorCode) {
+        return new HResultException(methodId, getHResult(lastErrorCode));
     }
 
-    public static HResultException forLastErrorCode(int lastErrorCode) {
-        return new HResultException(convertToHResult(lastErrorCode));
-    }
-
-    public static HResultException forLastErrorCode(String message, int lastErrorCode) {
-        return new HResultException(message, convertToHResult(lastErrorCode));
-    }
-
-    private static int convertToHResult(int lastErrorCode) {
+    private static int getHResult(int lastErrorCode) {
         //CHECKSTYLE.OFF: MagicNumber|InnerAssignment -- based on existing implementation
         return (lastErrorCode <= 0 ? lastErrorCode
                 : (lastErrorCode & 0x0000FFFF) | ((int) FACILITY_WIN32 << 16) | 0x80000000);
@@ -81,7 +67,7 @@ public class HResultException extends RuntimeException {
      *
      * @return the Windows HRESULT value represented by this exception.
      */
-    public final int convertToHResult() {
+    public final int getHResult() {
         return hResult;
     }
 

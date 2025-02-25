@@ -10,13 +10,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
+ * This file contains code derived from the JNA Platform library
+ * class com.sun.jna.platform.win32.Crypt32Util:
+ * https://github.com/java-native-access/jna/blob/5.16.0/contrib/platform/src/com/sun/jna/platform/win32/Crypt32Util.java
  *
  */
 
 package com.github.windpapi4j;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.*;
 
 import java.util.Arrays;
 
@@ -149,11 +151,6 @@ import java.util.Arrays;
 public final class WinDPAPI {
 
     /**
-     * Retrieved from com.sun.jna.platform.win32.W32Errors, used to
-     * calculate Windows HRESULT from Win32 error return code. */
-    private static final short FACILITY_WIN32 = 7;
-
-    /**
      * Indicates if we are being invoked on a Windows operating
      * system, where DPAPI should be present. (Not considering
      * ancient 9x, ME and other obsolete platforms)
@@ -204,13 +201,11 @@ public final class WinDPAPI {
      *
      * @param cryptProtectFlags the (optional) flags to apply when Windows Data Protection API methods
      *                          {@code CryptProtectData} and {@code CryptUnprotectData} are called
-     *
      * @return a {@code WinDPAPI} instance, which (if there is any) applies the passed flags to
-     *      Windows Data Protection API {@code CryptProtectData} and {@code CryptUnprotectData} method calls.
-     *
+     * Windows Data Protection API {@code CryptProtectData} and {@code CryptUnprotectData} method calls.
      * @throws InitializationFailedException in case the {@code WinDPAPI} could not be initialized.
-     *      (for example if it is called on a non-Windows platform or the loading of the JNA dispatcher fails)
-     *
+     *                                       (for example if it is called on a non-Windows platform or
+     *                                       the loading of the JNA dispatcher fails)
      * @see WinDPAPI.CryptProtectFlag
      */
     public static WinDPAPI newInstance(CryptProtectFlag... cryptProtectFlags) throws InitializationFailedException {
@@ -310,14 +305,16 @@ public final class WinDPAPI {
         CRYPTPROTECT_CRED_REGENERATE(0x80);
 
 
-        /** The numeric representation of this flag. */
+        /**
+         * The numeric representation of this flag.
+         */
         private final int value;
 
         /**
          * Constructs a enum constant with the value associated to it.
          *
          * @param flagValue the numeric representation of this enum constant
-         * */
+         */
         CryptProtectFlag(int flagValue) {
             this.value = flagValue;
         }
@@ -336,10 +333,8 @@ public final class WinDPAPI {
      *
      * @param data the data to encrypt (cannot be {@code null})
      * @return the encrypted data
-     *
-     * @throws NullPointerException if argument {@code data} is {@code null}
+     * @throws NullPointerException      if argument {@code data} is {@code null}
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
-     *
      * @see WinDPAPI#unprotectData(byte[])
      */
     public byte[] protectData(byte[] data) throws WinAPICallFailedException {
@@ -359,14 +354,11 @@ public final class WinDPAPI {
      * the underlying {@code CryptProtectData} method call.
      * </p>
      *
-     * @param data the data to encrypt (cannot be {@code null})
+     * @param data    the data to encrypt (cannot be {@code null})
      * @param entropy password or other additional entropy used to encrypt the data (might be {@code null})
-     *
      * @return the encrypted data
-     *
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
-     * @throws NullPointerException if argument {@code data} is {@code null}
-     *
+     * @throws NullPointerException      if argument {@code data} is {@code null}
      * @see WinDPAPI#unprotectData(byte[], byte[])
      */
     public byte[] protectData(byte[] data, byte[] entropy) throws WinAPICallFailedException {
@@ -385,16 +377,13 @@ public final class WinDPAPI {
      * the underlying {@code CryptProtectData} method call.
      * </p>
      *
-     * @param data the data to encrypt (cannot be {@code null})
-     * @param entropy password or other additional entropy used to encrypt the data (might be {@code null})
+     * @param data        the data to encrypt (cannot be {@code null})
+     * @param entropy     password or other additional entropy used to encrypt the data (might be {@code null})
      * @param description a human readable description of data to be encrypted,
      *                    which will be included with the encrypted data (might be {@code null})
-     *
      * @return the encrypted data
-     *
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
-     * @throws NullPointerException if argument {@code data} is {@code null}
-     *
+     * @throws NullPointerException      if argument {@code data} is {@code null}
      * @see WinDPAPI#unprotectData(byte[], byte[])
      */
     public byte[] protectData(byte[] data, byte[] entropy, String description) throws WinAPICallFailedException {
@@ -411,7 +400,8 @@ public final class WinDPAPI {
                     pEntropy, null, null, flags, pDataProtected);
 
             if (!apiCallSuccessful) {
-                err = HResultException.forLastErrorCode("CryptProtectData call failed", Kernel32.INSTANCE.GetLastError());
+                err = HResultException.forLastErrorCode(
+                        "Crypt32.CryptProtectData", Kernel32.INSTANCE.GetLastError());
             } else {
                 protectedData = pDataProtected.getData();
             }
@@ -424,15 +414,13 @@ public final class WinDPAPI {
             }
             if (pDataProtected.pbData != null) {
                 pDataProtected.pbData.clear(pDataProtected.cbData);
-                Pointer res = Kernel32.INSTANCE.LocalFree(pDataProtected.pbData);
-                if (res != null) {
-                    HResultException localFreeError =
-                            HResultException.forLastErrorCode(Kernel32.INSTANCE.GetLastError());
-
+                try {
+                    freeLocalMemory(pDataProtected.pbData);
+                } catch (HResultException e) {
                     if (err == null) {
-                        err = localFreeError;
+                        err = e;
                     } else {
-                        err.addSuppressed(localFreeError);
+                        err.addSuppressed(e);
                     }
                 }
             }
@@ -460,12 +448,9 @@ public final class WinDPAPI {
      * </p>
      *
      * @param data the data to decrypt (cannot be {@code null})
-     *
      * @return the decrypted data
-     *
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
-     * @throws NullPointerException if argument {@code data} is {@code null}
-     *
+     * @throws NullPointerException      if argument {@code data} is {@code null}
      * @see WinDPAPI#protectData(byte[])
      */
     public byte[] unprotectData(byte[] data) throws WinAPICallFailedException {
@@ -485,25 +470,70 @@ public final class WinDPAPI {
      * the underlying {@code CryptUnprotectData} method call.
      * </p>
      *
-     * @param data the data to decrypt (cannot be {@code null})
+     * @param data    the data to decrypt (cannot be {@code null})
      * @param entropy password or other additional entropy that was used to encrypt the data (might be {@code null})
-     *
      * @return the decrypted data
-     *
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
-     * @throws NullPointerException if argument {@code data} is {@code null}
-     *
+     * @throws NullPointerException      if argument {@code data} is {@code null}
      * @see WinDPAPI#protectData(byte[], byte[])
      */
     public byte[] unprotectData(byte[] data, byte[] entropy) throws WinAPICallFailedException {
 
         checkNotNull(data, "Argument data cannot be null");
 
-        return Crypt32Util.cryptUnprotectData(data, entropy, flags, null);
+        WinCrypt.DATA_BLOB pDataIn = new WinCrypt.DATA_BLOB(data);
+        WinCrypt.DATA_BLOB pDataUnprotected = new WinCrypt.DATA_BLOB();
+        WinCrypt.DATA_BLOB pEntropy = (entropy == null) ? null : new WinCrypt.DATA_BLOB(entropy);
+        HResultException err = null;
+        byte[] unProtectedData = null;
+        try {
+            boolean apiCallSuccessful = Crypt32.INSTANCE.CryptUnprotectData(pDataIn, null,
+                    pEntropy, null, null, flags, pDataUnprotected);
+
+            if (!apiCallSuccessful) {
+                err = HResultException.forLastErrorCode(
+                        "Crypt32.CryptUnprotectData", Kernel32.INSTANCE.GetLastError());
+            } else {
+                unProtectedData = pDataUnprotected.getData();
+            }
+        } finally {
+            if (pDataIn.pbData != null) {
+                pDataIn.pbData.clear(pDataIn.cbData);
+            }
+            if (pEntropy != null && pEntropy.pbData != null) {
+                pEntropy.pbData.clear(pEntropy.cbData);
+            }
+            if (pDataUnprotected.pbData != null) {
+                pDataUnprotected.pbData.clear(pDataUnprotected.cbData);
+                try {
+                    freeLocalMemory(pDataUnprotected.pbData);
+                } catch (HResultException e) {
+                    if (err == null) {
+                        err = e;
+                    } else {
+                        err.addSuppressed(e);
+                    }
+                }
+            }
+        }
+
+        if (err != null) {
+            if (unProtectedData != null) {
+                Arrays.fill(unProtectedData, (byte) 0);
+            }
+            throw err;
+        }
+
+        return unProtectedData;
 
     }
 
-
+    private static void freeLocalMemory(Pointer pbData) throws HResultException {
+        Pointer res = Kernel32.INSTANCE.LocalFree(pbData);
+        if (res != null) {
+            throw HResultException.forLastErrorCode("Kernel32.LocalFree", Kernel32.INSTANCE.GetLastError());
+        }
+    }
 
 
     //CHECKSTYLE.OFF: JavadocMethod -- internal methods
@@ -512,19 +542,4 @@ public final class WinDPAPI {
             throw new NullPointerException(message);
         }
     }
-
-    private void raiseHResultExceptionForLastError(String methodName) {
-
-        final int winApiErrorCode = Kernel32.INSTANCE.GetLastError();
-        // based on com.sun.jna.platform.win32.W32Errors.HRESULT_FROM_WIN32(int) with minor changes
-
-        //CHECKSTYLE.OFF: MagicNumber|InnerAssignment -- based on existing implementation
-        final int hResult = (winApiErrorCode <= 0 ? winApiErrorCode
-                : ((winApiErrorCode) & 0x0000FFFF) | ((int) FACILITY_WIN32 << 16) | 0x80000000);
-        //CHECKSTYLE.ON: MagicNumber|InnerAssignment
-
-
-        throw new HResultException(String.format("%s call signalled an error.", methodName), hResult);
-    }
-    //CHECKSTYLE.ON: JavadocMethod -- internal methods
 }
