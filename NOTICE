@@ -1,0 +1,15 @@
+Notice
+
+The implementation is derived from the following classes
+in the JNA Platform library, version 5.16.0:
+  - com.sun.jna.platform.win32.Crypt32Util
+  - com.sun.jna.platform.win32.WinCrypt
+  - com.sun.jna.platform.win32.Kernel32
+  - com.sun.jna.platform.win32.W32Errors
+
+The original authors of these parts are Daniel Doubrovkine
+(dblock[at]dblock.org), Timothy Wall and Markus Karg.
+
+The original JNA source codes are available on GitHub:
+https://github.com/java-native-access/jna
+

@@ -89,7 +89,7 @@ public class WinDPAPITest {
             Assert.assertTrue(cause instanceof HResultException,
                     "Cause should have been HResultException, but was " + cause);
 
-            int hResult = ((HResultException) cause).getHResult();
+            int hResult = ((HResultException) cause).convertToHResult();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
@@ -141,7 +141,7 @@ public class WinDPAPITest {
             Assert.assertTrue(cause instanceof HResultException,
                     "Cause should have been HResultException, but was " + cause);
 
-            int hResult = ((HResultException) cause).getHResult();
+            int hResult = ((HResultException) cause).convertToHResult();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
@@ -171,7 +171,7 @@ public class WinDPAPITest {
             Assert.assertTrue(cause instanceof HResultException,
                     "Cause should have been HResultException, but was " + cause);
 
-            int hResult = ((HResultException) cause).getHResult();
+            int hResult = ((HResultException) cause).convertToHResult();
 
             Assert.assertEquals(HRESULT_CORRUPTED_DATA, hResult);
         }
