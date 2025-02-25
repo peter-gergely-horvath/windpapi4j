@@ -21,6 +21,7 @@ package com.github.windpapi4j;
 import com.sun.jna.Pointer;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * <p>
@@ -90,7 +91,6 @@ import java.util.Arrays;
  *             {@code CryptUnprotectData}
  *         </td>
  *     </tr>
- *
  * </table>
  *
  *
@@ -138,7 +138,6 @@ import java.util.Arrays;
  * </code></pre>
  *
  * @author Peter G. Horvath
- *
  * @see #isPlatformSupported()
  * @see #newInstance(CryptProtectFlag...)
  * @see #protectData(byte[])
@@ -146,7 +145,6 @@ import java.util.Arrays;
  * @see #protectData(byte[], byte[], String)
  * @see #unprotectData(byte[])
  * @see #unprotectData(byte[], byte[])
- *
  */
 public final class WinDPAPI {
 
@@ -166,14 +164,35 @@ public final class WinDPAPI {
      * The numeric representation of flag values used within this {@code WindDPAPI} instance.
      */
     private final int flags;
+    private final Crypt32 crypt32Api;
+    private final Kernel32 kernel32Api;
 
     /**
      * Constructs a new {@code WinDPAPI} with the flag values applied.
      *
-     * @param flagValue the flag values to be used for the incoking
+     * @param flagValue the flag values to be used for the invocations
      */
     private WinDPAPI(int flagValue) {
+        // passing those singleton instances here causes their initialisation:
+        // if they cannot be created, we fail fast, without creating an apparently
+        // operational WinDPAPI instance.
+
+        this(flagValue, Crypt32.INSTANCE, Kernel32.INSTANCE);
+    }
+
+    /**
+     * Constructs a new {@code WinDPAPI} with the flag values applied.
+     *
+     * @param flagValue   the flag values to be used for the invocations
+     * @param crypt32Api  the {@link Crypt32} API instance
+     * @param kernel32Api the {@link Kernel32} API instance
+     */
+    private WinDPAPI(int flagValue, Crypt32 crypt32Api, Kernel32 kernel32Api) {
+        // While currently private, it could be made package-protected
+        // so that these API interfaces can be injeced from test cases, too
         this.flags = flagValue;
+        this.crypt32Api = crypt32Api;
+        this.kernel32Api = kernel32Api;
     }
 
     /**
@@ -224,6 +243,8 @@ public final class WinDPAPI {
             return new WinDPAPI(flagValue);
 
         } catch (Throwable t) {
+            // This catches UnsatisfiedLinkError too, which can be thrown if the
+            // JNA dispatcher is not there or fails to load the native libraries
             throw new InitializationFailedException("Initialization failed", t);
         }
     }
@@ -311,7 +332,7 @@ public final class WinDPAPI {
         private final int value;
 
         /**
-         * Constructs a enum constant with the value associated to it.
+         * Constructs an enum constant with the value associated to it.
          *
          * @param flagValue the numeric representation of this enum constant
          */
@@ -334,10 +355,14 @@ public final class WinDPAPI {
      * @param data the data to encrypt (cannot be {@code null})
      * @return the encrypted data
      * @throws NullPointerException      if argument {@code data} is {@code null}
+     * @throws HResultException          in case the invocation of Windows DPAPI {@code CryptProtectData} fails
+     *                                   and a HRESULT error code was available
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
      * @see WinDPAPI#unprotectData(byte[])
      */
-    public byte[] protectData(byte[] data) throws WinAPICallFailedException {
+    public byte[] protectData(byte[] data)
+            throws HResultException, WinAPICallFailedException {
+
         return protectData(data, null);
     }
 
@@ -357,11 +382,15 @@ public final class WinDPAPI {
      * @param data    the data to encrypt (cannot be {@code null})
      * @param entropy password or other additional entropy used to encrypt the data (might be {@code null})
      * @return the encrypted data
-     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
      * @throws NullPointerException      if argument {@code data} is {@code null}
+     * @throws HResultException          in case the invocation of Windows DPAPI {@code CryptProtectData} fails
+     *                                   and a HRESULT error code was available
+     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
      * @see WinDPAPI#unprotectData(byte[], byte[])
      */
-    public byte[] protectData(byte[] data, byte[] entropy) throws WinAPICallFailedException {
+    public byte[] protectData(byte[] data, byte[] entropy)
+            throws HResultException, WinAPICallFailedException {
+
         return protectData(data, entropy, null);
     }
 
@@ -379,16 +408,32 @@ public final class WinDPAPI {
      *
      * @param data        the data to encrypt (cannot be {@code null})
      * @param entropy     password or other additional entropy used to encrypt the data (might be {@code null})
-     * @param description a human readable description of data to be encrypted,
+     * @param description a human-readable description of data to be encrypted,
      *                    which will be included with the encrypted data (might be {@code null})
      * @return the encrypted data
-     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
      * @throws NullPointerException      if argument {@code data} is {@code null}
+     * @throws HResultException          in case the invocation of Windows DPAPI {@code CryptProtectData} fails
+     *                                   and a HRESULT error code was available
+     * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptProtectData} fails
      * @see WinDPAPI#unprotectData(byte[], byte[])
      */
-    public byte[] protectData(byte[] data, byte[] entropy, String description) throws WinAPICallFailedException {
+    public byte[] protectData(byte[] data, byte[] entropy, String description)
+            throws HResultException, WinAPICallFailedException {
 
-        checkNotNull(data, "Argument data cannot be null");
+        Objects.requireNonNull((Object) data, "Argument data cannot be null");
+
+        try {
+            return doProtectData(data, entropy, description);
+
+        } catch (HResultException hResultException) {
+            throw hResultException;
+
+        } catch (Throwable throwable) {
+            throw new WinAPICallFailedException("Invocation of CryptProtectData failed", throwable);
+        }
+    }
+
+    private byte[] doProtectData(byte[] data, byte[] entropy, String description) throws HResultException {
 
         WinCrypt.DATA_BLOB pDataIn = new WinCrypt.DATA_BLOB(data);
         WinCrypt.DATA_BLOB pDataProtected = new WinCrypt.DATA_BLOB();
@@ -396,12 +441,13 @@ public final class WinDPAPI {
         HResultException err = null;
         byte[] protectedData = null;
         try {
-            boolean apiCallSuccessful = Crypt32.INSTANCE.CryptProtectData(pDataIn, description,
+            boolean apiCallSuccessful = crypt32Api.CryptProtectData(pDataIn, description,
                     pEntropy, null, null, flags, pDataProtected);
 
             if (!apiCallSuccessful) {
+
                 err = HResultException.forLastErrorCode(
-                        "Crypt32.CryptProtectData", Kernel32.INSTANCE.GetLastError());
+                        "Crypt32.CryptProtectData", kernel32Api.GetLastError());
             } else {
                 protectedData = pDataProtected.getData();
             }
@@ -449,11 +495,15 @@ public final class WinDPAPI {
      *
      * @param data the data to decrypt (cannot be {@code null})
      * @return the decrypted data
+     * @throws HResultException          in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
+     *                                   and a HRESULT error code was available
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
      * @throws NullPointerException      if argument {@code data} is {@code null}
      * @see WinDPAPI#protectData(byte[])
      */
-    public byte[] unprotectData(byte[] data) throws WinAPICallFailedException {
+    public byte[] unprotectData(byte[] data)
+            throws HResultException, WinAPICallFailedException {
+
         return unprotectData(data, null);
     }
 
@@ -473,14 +523,30 @@ public final class WinDPAPI {
      * @param data    the data to decrypt (cannot be {@code null})
      * @param entropy password or other additional entropy that was used to encrypt the data (might be {@code null})
      * @return the decrypted data
+     * @throws HResultException          in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
+     *                                   and a HRESULT error code was available
      * @throws WinAPICallFailedException in case the invocation of Windows DPAPI {@code CryptUnprotectData} fails
      * @throws NullPointerException      if argument {@code data} is {@code null}
      * @see WinDPAPI#protectData(byte[], byte[])
      */
-    public byte[] unprotectData(byte[] data, byte[] entropy) throws WinAPICallFailedException {
+    public byte[] unprotectData(byte[] data, byte[] entropy)
+            throws HResultException, WinAPICallFailedException {
 
-        checkNotNull(data, "Argument data cannot be null");
+        Objects.requireNonNull((Object) data, "Argument data cannot be null");
 
+        try {
+            return doUnprotectData(data, entropy);
+
+        } catch (HResultException hResultException) {
+            throw hResultException;
+
+        } catch (Throwable throwable) {
+            throw new WinAPICallFailedException("Invocation of CryptUnprotectData failed", throwable);
+        }
+
+    }
+
+    private byte[] doUnprotectData(byte[] data, byte[] entropy) throws HResultException {
         WinCrypt.DATA_BLOB pDataIn = new WinCrypt.DATA_BLOB(data);
         WinCrypt.DATA_BLOB pDataUnprotected = new WinCrypt.DATA_BLOB();
         WinCrypt.DATA_BLOB pEntropy = (entropy == null) ? null : new WinCrypt.DATA_BLOB(entropy);
@@ -525,7 +591,6 @@ public final class WinDPAPI {
         }
 
         return unProtectedData;
-
     }
 
     private static void freeLocalMemory(Pointer pbData) throws HResultException {
@@ -535,11 +600,4 @@ public final class WinDPAPI {
         }
     }
 
-
-    //CHECKSTYLE.OFF: JavadocMethod -- internal methods
-    private void checkNotNull(Object object, String message) {
-        if (object == null) {
-            throw new NullPointerException(message);
-        }
-    }
 }
