@@ -43,19 +43,27 @@ public class HResultException extends WinAPICallFailedException {
     /**
      * Constructs a new {@code HResultException} with the specified methodId and HResult value.
      *
-     * @param methodId the identifier of the method that failed.
+     * @param methodId human-readable identifier of the method that failed.
      * @param hResult the HRESULT value from Windows API.
      */
     HResultException(String methodId, int hResult) {
-        super(String.format("%s failed with HRESULT=%s", methodId, hResult));
+        super(String.format("%s failed with HRESULT=0x%08x", methodId, hResult));
         this.hResult = hResult;
     }
 
+    /**
+     * Creates a new {@code HResultException} with the specified methodId and last-error code value.
+     *
+     * @param methodId human-readable identifier of the method that failed.
+     * @param lastErrorCode last-error code from Windows API.
+     *
+     * @return a new {@code HResultException} with the specified methodId and last-error code value.
+     */
     static HResultException forLastErrorCode(String methodId, int lastErrorCode) {
-        return new HResultException(methodId, getHResult(lastErrorCode));
+        return new HResultException(methodId, convertLastErrorCodeToHResult(lastErrorCode));
     }
 
-    private static int getHResult(int lastErrorCode) {
+    private static int convertLastErrorCodeToHResult(int lastErrorCode) {
         //CHECKSTYLE.OFF: MagicNumber|InnerAssignment -- based on existing implementation
         return (lastErrorCode <= 0 ? lastErrorCode
                 : (lastErrorCode & 0x0000FFFF) | ((int) FACILITY_WIN32 << 16) | 0x80000000);
