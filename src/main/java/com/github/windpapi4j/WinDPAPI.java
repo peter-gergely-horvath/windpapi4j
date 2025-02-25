@@ -189,7 +189,7 @@ public final class WinDPAPI {
      */
     private WinDPAPI(int flagValue, Crypt32 crypt32Api, Kernel32 kernel32Api) {
         // While currently private, it could be made package-protected
-        // so that these API interfaces can be injeced from test cases, too
+        // so that these API interfaces can be injected from test cases, too
         this.flags = flagValue;
         this.crypt32Api = crypt32Api;
         this.kernel32Api = kernel32Api;
