@@ -407,10 +407,10 @@ public final class WinDPAPI {
         HResultException err = null;
         byte[] protectedData = null;
         try {
-            boolean apiCallSuccessful = !Crypt32.INSTANCE.CryptProtectData(pDataIn, description,
+            boolean apiCallSuccessful = Crypt32.INSTANCE.CryptProtectData(pDataIn, description,
                     pEntropy, null, null, flags, pDataProtected);
 
-            if (apiCallSuccessful) {
+            if (!apiCallSuccessful) {
                 err = HResultException.forLastErrorCode("CryptProtectData call failed", Kernel32.INSTANCE.GetLastError());
             } else {
                 protectedData = pDataProtected.getData();
@@ -424,16 +424,15 @@ public final class WinDPAPI {
             }
             if (pDataProtected.pbData != null) {
                 pDataProtected.pbData.clear(pDataProtected.cbData);
-                try {
-                    Pointer res = Kernel32.INSTANCE.LocalFree(pDataProtected.pbData);
-                    if (res != null) {
-                        throw HResultException.forLastErrorCode(Kernel32.INSTANCE.GetLastError());
-                    }
-                } catch(HResultException e) {
+                Pointer res = Kernel32.INSTANCE.LocalFree(pDataProtected.pbData);
+                if (res != null) {
+                    HResultException localFreeError =
+                            HResultException.forLastErrorCode(Kernel32.INSTANCE.GetLastError());
+
                     if (err == null) {
-                        err = e;
+                        err = localFreeError;
                     } else {
-                        err.addSuppressed(e);
+                        err.addSuppressed(localFreeError);
                     }
                 }
             }
