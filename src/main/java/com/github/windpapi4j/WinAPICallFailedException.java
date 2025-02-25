@@ -28,6 +28,14 @@ public class WinAPICallFailedException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /**
+     * Constructs a new {@code WinAPICallFailedException} with {@code null} as its detail message.
+     *
+     */
+    public WinAPICallFailedException() {
+        super();
+    }
+
+    /**
      * Constructs a new {@code WinAPICallFailedException} with the specified message and cause.
      *
      * @param message the detail message.

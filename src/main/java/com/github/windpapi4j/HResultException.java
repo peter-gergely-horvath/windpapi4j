@@ -41,6 +41,15 @@ public class HResultException extends WinAPICallFailedException {
     private final int hResult;
 
     /**
+     * Constructs a new {@code HResultException} with no message and {@code 0} as its {@code hResult} value.
+     *
+     */
+    public HResultException() {
+        super();
+        this.hResult = 0;
+    }
+
+    /**
      * Constructs a new {@code HResultException} with the specified methodId and HResult value.
      *
      * @param methodId human-readable identifier of the method that failed.
