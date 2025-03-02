@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 public class WinDPAPITest {
 
-    private int HRESULT_CORRUPTED_DATA = -2147024883;
+    private final int HRESULT_CORRUPTED_DATA = -2147024883;
 
     private WinDPAPI winDPAPI;
 
@@ -64,7 +64,7 @@ public class WinDPAPITest {
 
 
         Assert.assertEquals(input, unprotectedData);
-        Assert.assertEquals(originalString, unprotectedString);
+        Assert.assertEquals(unprotectedString, originalString);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class WinDPAPITest {
 
 
         Assert.assertEquals(input, unprotectedData);
-        Assert.assertEquals(originalString, unprotectedString);
+        Assert.assertEquals(unprotectedString, originalString);
     }
 
     @Test
