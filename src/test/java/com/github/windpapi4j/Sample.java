@@ -7,9 +7,14 @@ import java.nio.charset.StandardCharsets;
 
 public class Sample {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        if(WinDPAPI.isPlatformSupported()) {
+        if (!WinDPAPI.isPlatformSupported()) {
+            System.err.println("ERROR: platform is not supported");
+            System.exit(-1);
+        }
+
+        try {
             WinDPAPI winDPAPI = WinDPAPI.newInstance(CryptProtectFlag.CRYPTPROTECT_UI_FORBIDDEN);
 
             String message = "Hello World!";
@@ -22,14 +27,26 @@ public class Sample {
 
             String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
 
-            if(! message.equals(decryptedMessage) ) {
+            if (!message.equals(decryptedMessage)) {
                 throw new IllegalStateException(message + " != " + decryptedMessage); // should not happen
             }
 
             System.out.println(decryptedMessage);
 
-        } else {
-            System.err.println("ERROR: platform not supported");
+        } catch (InitializationFailedException initializationFailedException) {
+            initializationFailedException.printStackTrace();
+
+            System.exit(1);
+        } catch (HResultException hResultException) {
+            System.err.println(hResultException.getMessage());
+            System.err.format("Value of HRESULT is: %s %n", hResultException.getHResult());
+
+            System.exit(2);
+
+        } catch (WinAPICallFailedException winAPICallFailedException) {
+            winAPICallFailedException.printStackTrace();
+
+            System.exit(3);
         }
     }
 }
