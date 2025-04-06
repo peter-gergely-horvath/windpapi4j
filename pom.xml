@@ -104,7 +104,6 @@
                         <phase>validate</phase>
                         <configuration>
                             <configLocation>configuration/checkstyle.xml</configLocation>
-                            <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>false</failsOnError>
                             <linkXRef>false</linkXRef>
