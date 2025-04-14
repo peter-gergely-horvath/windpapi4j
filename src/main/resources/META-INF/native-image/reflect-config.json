@@ -10,7 +10,8 @@
         "allDeclaredMethods": true
     },
     {
-        "name": "com.github.windpapi4j.WinCrypt.DATA_BLOB",
-        "allDeclaredFields": true
+        "name": "com.github.windpapi4j.WinCrypt$DATA_BLOB",
+        "allDeclaredFields": true,
+        "allPublicFields": true
     }
 ]
