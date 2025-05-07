@@ -1,0 +1,17 @@
+[
+  {
+    "name": "com.github.windpapi4j.Crypt32",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.github.windpapi4j.Kernel32",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.github.windpapi4j.WinCrypt$DATA_BLOB",
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  }
+]
