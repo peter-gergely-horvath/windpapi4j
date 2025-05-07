@@ -97,3 +97,12 @@ public class Sample {
 
 This library has been made available in [Maven Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.peter-gergely-horvath%22%20a%3A%22windpapi4j%22).  
 
+## Version overview
+
+| Version  | Java version | Description                                                                                                |
+| ---------|--------------|------------------------------------------------------------------------------------------------------------|
+| 2.2.0    | 11           | Support added for GraalVM native image                                                                     |
+| 2.1.0    | 11           | Support added for Java modules                                                                             |
+| 2.0.0    | 8            | Rewrite, based on recent JNA platform; upgrade to modern JNA library versions, last modern Java 8 version. |
+| 1.1.0    | 8            | Upgrade to a more modern JNA library version, Obsolete, users are advised to upgrade to 2.2 version.       |
+| 1.0      | 8            | Initial public version based on the JNA platform. Obsolete, users are advised to upgrade to 2.2 version.   |
